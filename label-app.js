@@ -1,5 +1,5 @@
 (function () {
-  const TARGET_DEVICE_ID = 'dev-qr0f7eci-xhht';
+  const TARGET_DEVICE_ID = 'dev-xxp7w0ue-plpo';
   const REQUEST_PATH = 'labelPrintRequests';
   const firebaseConfig = {
     apiKey: "AIzaSyAZ4-dUBSKsHP3sTqRE8G9c2AjeclTlIik",
