@@ -1,0 +1,17 @@
+{
+  "name": "Sticker Printer",
+  "short_name": "Stickers",
+  "start_url": "label-app.html",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#12352f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "label-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
