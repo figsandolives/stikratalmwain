@@ -1,5 +1,4 @@
 (function () {
-  const TARGET_DEVICE_ID = 'dev-xxp7w0ue-plpo';
   const REQUEST_PATH = 'labelPrintRequests';
   const firebaseConfig = {
     apiKey: "AIzaSyAZ4-dUBSKsHP3sTqRE8G9c2AjeclTlIik",
@@ -605,7 +604,6 @@
     const requestId = requestRef.key;
     const payload = {
       id: requestId,
-      targetDeviceId: TARGET_DEVICE_ID,
       source: 'mobile-label-app',
       status: 'pending',
       createdAt: firebase.database.ServerValue.TIMESTAMP,
@@ -619,14 +617,14 @@
         state.cart = [];
         saveCart();
         showMessage('Printed successfully', 'The selected stickers were sent to the label printer.', false);
-      } else if (result.status === 'offline') {
-        showMessage('Please open the desktop app on the computer and try again.', 'Your cart is still saved.', true);
+      } else if (result.status === 'rejected') {
+        showMessage('Print request was rejected on the desktop app.', 'Your cart is still saved.', true);
       } else {
         showMessage(result.error || 'Print failed. Please try again.', 'Your cart is still saved.', true);
       }
     } catch (error) {
       console.error(error);
-      showMessage('Please open the desktop app on the computer and try again.', 'Your cart is still saved.', true);
+      showMessage('The desktop app did not confirm printing. Your cart is still saved.', 'Your cart is still saved.', true);
     }
   }
 
@@ -645,21 +643,12 @@
       };
       const onValue = (snapshot) => {
         const request = snapshot.val() || {};
-        if (request.status === 'completed' || request.status === 'failed') {
+        if (request.status === 'completed' || request.status === 'failed' || request.status === 'rejected') {
           const elapsed = Date.now() - start;
           setTimeout(() => finish(request), Math.max(0, minWaitMs - elapsed));
         }
       };
       requestRef.on('value', onValue);
-      setTimeout(async () => {
-        if (settled) return;
-        const statusSnapshot = await db.ref(`status/${TARGET_DEVICE_ID}`).once('value');
-        const status = statusSnapshot.val() || {};
-        if (!status.online) {
-          await requestRef.update({ status: 'waiting-for-desktop', checkedAt: firebase.database.ServerValue.TIMESTAMP });
-          finish({ status: 'offline' });
-        }
-      }, 2500);
       setTimeout(() => finish({ status: 'timeout', error: 'The desktop app did not confirm printing. Your cart is still saved.' }), maxWaitMs);
     });
   }
